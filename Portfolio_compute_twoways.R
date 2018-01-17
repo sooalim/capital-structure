@@ -2,18 +2,18 @@
 # Debt to Capital Portfolio                                        #
 #------------------------------------------------------------------#
 
-portfolio_compute<-function(data=Annual_Ratio,item="DCMarket", # Any item that exist in the data table
+portfolio_compute_reverse<-function(data=Annual_Ratio,item="DCMarket", # Any item that exist in the data table
                             criteria="DCMarket",               # Any item that exist in the data table
-                            start=1979, 
-                            end=2016, eventtime=21, 
+                            start=2016,
+                            end=1999, 
+                            eventtime=21, 
                             survivor = c("s","ns"),            #s: Survivors ns: non-survivors
                             scope = c("all", "pure", "active"),#pure: only US Regional banks that are active and inactive. 
                             #all: Reginoal banks + Bulge Brackets that are active and inactive 
                             #active: all banks that are still in business
                             plot.all=c(TRUE, FALSE),           #Plot average leverage graphs of each portfolios formulated every year 
                             main="Debt to Market Capital Portfolio (Pure US Regional Active Banks)", 
-                            ylab="Market Leverage", loc="topright",
-                            reverse=FALSE)
+                            ylab="Market Leverage", loc="topright")
 {
   Annual_Ratio<-data
   #portfolio.hold - Held for 1
@@ -22,29 +22,27 @@ portfolio_compute<-function(data=Annual_Ratio,item="DCMarket", # Any item that e
   #length of event period
   eventtime=eventtime
   start = start
-  if(survivor=="s"){end=2016-eventtime+1}
+  if(survivor=="s"){end=1979+eventtime+1}
   else {end = end}
-  
-  if (reverse==TRUE){start1=start
-  start=end
-  end=start1}
   
   for (i in seq(start,end)){
     
     #start year
     sy=i 
+    
     #end year
-    if(reverse==FALSE) {ey=sy+eventtime} 
-    else {ey=sy-eventtime}
+    ey=sy-eventtime
+    
     #Criteria for dividing quartiles
     criteria = criteria
+    
     #item of interest
     item = item
-    
+
     if(scope=="all"){
       #for all companies that existed at year sy, allows for active/inactive banks/bigbanks in the set
       sy.exists<-subset(Annual_Ratio, Annual_Ratio$year==sy,"Ticker")
-    }
+    } 
     else if (scope=="pure"){
       #for all companies that existed at year sy, Pure US Regionals option. 
       sy.exists<-subset(Annual_Ratio, Annual_Ratio$year==sy& !(Annual_Ratio$Ticker %in% BigBanks),"Ticker")
@@ -53,13 +51,13 @@ portfolio_compute<-function(data=Annual_Ratio,item="DCMarket", # Any item that e
       #for all companies that existed at year sy, Pure US Regionals, Active Banks option. 
       sy.exists<-subset(Annual_Ratio, Annual_Ratio$year==sy& Annual_Ratio$Ticker %in% setdiff(Active, BigBanks),"Ticker")
     }
+
     
     a <- count(subset(Annual_Ratio, 
                       Annual_Ratio$Ticker %in% sy.exists$Ticker&
-                        Annual_Ratio$year>=sy&Annual_Ratio$year<ey&
-                        !is.na(Annual_Ratio[,item]),
-                      "Ticker")) 
-    
+                        Annual_Ratio$year>=ey&Annual_Ratio$year<sy&
+                        !is.na(Annual_Ratio[,item]),"Ticker")) 
+    print(a)
     if(survivor=="s"){
       
       # Requires the firm to have survived over the whole event time period
@@ -70,12 +68,18 @@ portfolio_compute<-function(data=Annual_Ratio,item="DCMarket", # Any item that e
       a<-a[,1] #(All inclusive options)
     }
     
-    x<-subset(Annual_Ratio[(Annual_Ratio$Ticker %in% a)&(Annual_Ratio$year>=sy)&(Annual_Ratio$year<ey),])
-    y<-data.frame(cbind(Ticker=as.character(x[x$year==sy,c("Ticker")]),quantile= cut(x[x$year==sy,criteria], breaks = quantile(x[x$year==sy,criteria], probs = seq(0, 1, 0.25), na.rm=TRUE, names=TRUE), include.lowest = TRUE, labels = 1:4)))
+    x<-subset(Annual_Ratio[(Annual_Ratio$Ticker %in% a)&(Annual_Ratio$year>ey)&(Annual_Ratio$year<=sy),])
+    y<-data.frame(cbind(Ticker=as.character(x[x$year==sy,c("Ticker")]),
+                        quantile=cut(x[x$year==sy,criteria], 
+                                      breaks = quantile(x[x$year==sy,criteria], probs = seq(0, 1, 0.25), na.rm=TRUE, names=TRUE), 
+                                      include.lowest = TRUE, 
+                                      labels = 1:4)
+                        )
+                  )
     
     x.sub<-x[,c("Ticker", "year", item)]
     quantile.hold<-left_join(x.sub, y)
-    quantile.hold$eventyear<-quantile.hold$year-sy
+    quantile.hold$eventyear<-quantile.hold$year-ey
     
     mean_<-function(x){mean(x, na.rm=TRUE)}
     median_<-function(x){median(x, na.rm=TRUE)}
