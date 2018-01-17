@@ -86,11 +86,7 @@ portfolio_compute(data=new.dp.book, item="DCBook",criteria="residuals", start=mi
                   survivor = "ns", scope = "all",plot.all=FALSE,
                   main="Debt to Book Capital Portfolio (US Regional Banks, Book Residual)", 
                   ylab="Book Leverage", loc="bottomright")
-#reverse?
-portfolio_compute(data=new.dp.book, item="DCBook",criteria="residuals", start=min(new.dp.book$year), end=2016, eventtime=20, 
-                  survivor = "ns", scope = "all",plot.all=FALSE,
-                  main="Debt to Book Capital Portfolio (All inclusive, Book Leverage Residual)", 
-                  ylab="Book Leverage", loc="bottomright", reverse=FALSE)
+
 
 #Market Leverage
 portfolio_compute(data=new.dp.market, item="DCMarket",criteria="residuals", start=min(new.dp.market$year), end=2016, eventtime=20, 
@@ -108,3 +104,49 @@ portfolio_compute(data=new.dp.market, item="DCMarket",criteria="residuals", star
                   survivor = "ns", scope = "pure",plot.all=FALSE,
                   main="Debt to Market Capital Portfolio (US Regional Banks, Market Residual)", 
                   ylab="Market Leverage")
+
+#Leverage Reverse
+#Book - US Regionals
+portfolio_compute_reverse(data=Annual_Ratio, item="DCBook",criteria="DCBook", start=max(new.dp.book$year), end=1980, eventtime=20, 
+                          survivor = "ns", scope = "pure",plot.all=FALSE,
+                          main="Debt to Book Capital Portfolio (US Regionals, Reverse)", 
+                          ylab="Book Leverage", loc="bottomleft")
+#Market - US Regionals
+portfolio_compute_reverse(data=Annual_Ratio, item="DCMarket",criteria="DCMarket", start=max(new.dp.book$year), end=1980, eventtime=20, 
+                          survivor = "ns", scope = "pure",plot.all=FALSE,
+                          main="Debt to Market Capital Portfolio (US Regionals, Reverse)", 
+                          ylab="Book Leverage", loc="bottomleft")
+#Book - Survivors
+portfolio_compute_reverse(data=new.dp.book, item="DCBook",criteria="DCBook", start=max(new.dp.book$year), end=1980, eventtime=20, 
+                          survivor = "s", scope = "pure",plot.all=FALSE,
+                          main="Debt to Book Capital Portfolio (Survivors, Reverse)", 
+                          ylab="Book Leverage", loc="bottomleft")
+#Market - Survivors
+portfolio_compute_reverse(data=new.dp.book, item="DCMarket",criteria="DCMarket", start=max(new.dp.book$year), end=1980, eventtime=20, 
+                          survivor = "s", scope = "pure",plot.all=FALSE,
+                          main="Debt to Market Capital Portfolio (Survivors, Reverse)", 
+                          ylab="Book Leverage", loc="bottomleft")
+#Book - US Regionals - Residuals
+portfolio_compute_reverse(data=new.dp.book, item="DCBook",criteria="residuals", start=max(new.dp.book$year), end=1980, eventtime=20, 
+                          survivor = "ns", scope = "pure",plot.all=FALSE,
+                          main="Debt to Book Capital Portfolio (US Regionals, Reverse)", 
+                          ylab="Book Leverage", loc="bottomleft")
+#Market - US Regionals - Residuals
+portfolio_compute_reverse(data=new.dp.market, item="DCMarket",criteria="residuals", start=max(new.dp.book$year), end=1980, eventtime=20, 
+                          survivor = "ns", scope = "pure",plot.all=FALSE,
+                          main="Debt to Market Capital Portfolio (US Regionals, Reverse)", 
+                          ylab="Book Leverage", loc="bottomleft")
+
+#Book - US Regionals - survivors -  Residuals
+portfolio_compute_reverse(data=new.dp.book, item="DCBook",criteria="residuals", start=max(new.dp.book$year), end=1980, eventtime=20, 
+                          survivor = "s", scope = "pure",plot.all=FALSE,
+                          main="Debt to Book Capital Portfolio (Survivors, Reverse)", 
+                          ylab="Book Leverage", loc="bottomleft")
+#Market - US Regionals - survivors - Residuals
+portfolio_compute_reverse(data=new.dp.market, item="DCMarket",criteria="residuals", start=max(new.dp.book$year), end=1980, eventtime=20, 
+                          survivor = "s", scope = "pure",plot.all=FALSE,
+                          main="Debt to Market Capital Portfolio (US Regionals, Reverse)", 
+                          ylab="Book Leverage", loc="bottomleft")
+
+
+
