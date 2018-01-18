@@ -13,6 +13,9 @@
 #example of using portfolio_compute.R function with unexpected leverage
 #(Using residuals from regression)
 source("portfolio_compute.R")
+source("portfolio_compute_reverse.R")
+
+
 dp<-pdata.frame(Annual_Ratio)
 bdp<-make.pbalanced(pdata.frame(Annual_Ratio),type="fill")
 
@@ -20,7 +23,7 @@ bdp<-make.pbalanced(pdata.frame(Annual_Ratio),type="fill")
 for(i in colnames(dp)[7:NCOL(dp)]){
   if(i==colnames(dp)[7]){temp<-plm::lag(dp[,7],k=1)} 
   else {temp<-cbind(temp, plm::lag(dp[,i],k=1))}}
-dp_l1<-cbind(dp[,1:6],temp)
+dp_l1<-cbind(dp,temp)
 colnames(dp_l1)<-colnames(dp)
 
 # dataset with lagged variables (bdp)
@@ -29,6 +32,7 @@ for(i in colnames(bdp)[7:NCOL(bdp)]){
   else {temp<-cbind(temp, plm::lag(bdp[,i],k=1))}}
 bdp_l1<-cbind(bdp[,1:6],temp)
 colnames(bdp_l1)<-colnames(bdp)
+
 
 #bdp$crisis<-ifelse(as.numeric(as.character(bdp$year))<2009, 0, 1)
 
